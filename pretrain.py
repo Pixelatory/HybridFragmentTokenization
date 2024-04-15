@@ -17,10 +17,18 @@ def main(random_state: int, model_save_name: str, fragmentation: bool, two_phase
          smiles_frag_vocab_path: str = 'vocabs/allmolgen_frag_smiles_vocab.txt',
          frag_vocab_path: str = None, test_epoch_batch_interval: int = 5000, num_workers: int = 1):
     """
-        max_testing_not_improved: number of test epochs without improvement before stopping the training process
-        smiles_col: smiles column from pretraining CSV file
-        num_workers: set number of processes for train and test dataloaders
-        test_epoch_batch_interval: number of training batches before performing test epoch
+        Arguments:
+        - random_state: Seed value for random number generation
+        - model_save_name: Save name for model log file and weights
+        - fragmentation: use hybrid fragment-SMILES tokenization (True) or not (False)
+        - two_phase: two-phase pretraining (True) or one-phase pretraining (False)
+        - num_train_epoch: amount of training epochs (can set to high value and training stops when testing loss does not improve)
+        - dropout_rate: dropout rate for MTL-BERT model
+        - smiles_frag_vocab_path: vocab path that includes SMILES linking tokens for hybrid fragmentization
+        - max_testing_not_improved: number of test epochs without improvement before stopping the training process
+        - smiles_col: smiles column from pretraining CSV file
+        - num_workers: set number of processes for train and test dataloaders
+        - test_epoch_batch_interval: number of training batches before performing test epoch
     """
     if fragmentation and frag_vocab_path is None:
         raise Exception("If using hybrid fragmentation, need to provide fragment vocabulary path")
@@ -239,8 +247,10 @@ def main(random_state: int, model_save_name: str, fragmentation: bool, two_phase
                 break
 
 if __name__ == "__main__":
+    # NOTE: device.py needs to be changed, depending on where pretraining is performed
+
     model_save_name = '500freq_onephase'  # change for different file name when saving model
-    num_train_epoch = 1  # high value that'll likely never be reached
+    num_train_epoch = 1000000  # high value that'll likely never be reached
     fragmentation = True  # True for hybrid SMILES-fragment encodings
     frag_vocab_path = 'vocabs/500freq_vocab.txt'  # change me for different fragment vocabs
     
@@ -251,7 +261,8 @@ if __name__ == "__main__":
     smiles_vocab_path = 'vocabs/allmolgen_vocab.txt'
     smiles_frag_vocab_path = 'vocabs/allmolgen_frag_smiles_vocab.txt'
     test_epoch_batch_interval = 5000
-    num_workers = 12
+    num_workers = 12  # for dataloader
+    random_state = 42
 
     '''
     Two-phase (True): First trains on smiles, then hybrid fragment-smiles. 
@@ -261,9 +272,7 @@ if __name__ == "__main__":
     '''
     two_phase = False
     
-    random_states = [42, 182, 625, 511, 310]
-    for random_state in random_states:
-        main(random_state, model_save_name, fragmentation, two_phase,
-             num_train_epoch, max_testing_not_improved, smiles_col, arch,
-             dropout_rate, smiles_vocab_path, smiles_frag_vocab_path,
-             frag_vocab_path, test_epoch_batch_interval, num_workers)
+    main(random_state, model_save_name, fragmentation, two_phase,
+            num_train_epoch, max_testing_not_improved, smiles_col, arch,
+            dropout_rate, smiles_vocab_path, smiles_frag_vocab_path,
+            frag_vocab_path, test_epoch_batch_interval, num_workers)

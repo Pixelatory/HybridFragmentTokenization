@@ -80,12 +80,17 @@ def main(num_folds: int, pretrain_model_weights_file_path: str,
 
     generator = np.random.default_rng(random_state)
 
+    reg_means = []
+    reg_stds = []
+
     dfs = []
     columns = set()
     for reg_col in reg_cols:
         df = pd.read_csv('data/reg/{}.csv'.format(reg_col))
         # NORMALIZING THE REGRESSION DATA
-        df[reg_col] = (df[reg_col] - df[reg_col].mean()) / (df[reg_col].std())
+        reg_means.append(df[reg_col].mean())
+        reg_stds.append(df[reg_col].std())
+        df[reg_col] = (df[reg_col] - reg_means[-1]) / (reg_stds[-1])
         df = df.sample(frac=1, random_state=generator.bit_generator).reset_index(drop=True)
         dfs.append(df)
         columns.update(df.columns.to_list())
@@ -340,6 +345,8 @@ def main(num_folds: int, pretrain_model_weights_file_path: str,
                     "max_testing_not_improved": max_testing_not_improved,
                     "reg_cols": reg_cols,
                     "clf_cols": clf_cols,
+                    "reg_means": reg_means,
+                    "reg_stds": reg_stds,
                 }
 
                 if num_folds is not None:
@@ -390,12 +397,13 @@ def main(num_folds: int, pretrain_model_weights_file_path: str,
 
 
 if __name__ == '__main__':
+    # NOTE: device.py needs to be changed, depending on where finetuning is performed
     # NOTE: Read description of main() to understand why some arguments are set to None
 
-    num_folds = None
-    train_ratio = 0.8
+    num_folds = 5  # k for k-fold cross-validation (set None for train-test split)
+    train_ratio = None  # train ratio for train-test split (set to None for cross-validation)
 
-    pretrain_model_weights_file_path = 'weights/pretrain/12-04-2024-19-07-33_500freq_onephase_phase1_best.pt'
+    pretrain_model_weights_file_path = 'weights/pretrain/FILLTHIS!'
     model_save_name = None
     fragmentation = None
 
@@ -419,5 +427,6 @@ if __name__ == '__main__':
     smiles_col = "SMILES"
 
     main(num_folds, pretrain_model_weights_file_path, clf_cols, reg_cols,
-         max_testing_not_improved, smiles_col, fragmentation, model_save_name, smiles_vocab_path, smiles_frag_vocab_path,
-         frag_vocab_path, num_workers, dropout_rate, random_state, train_ratio)
+         max_testing_not_improved, smiles_col, fragmentation, model_save_name, 
+         smiles_vocab_path, smiles_frag_vocab_path, frag_vocab_path, num_workers, 
+         dropout_rate, random_state, train_ratio)
