@@ -4,6 +4,7 @@ GitHub repository for a submitted paper "ADMET Prediction from a Fragment Spectr
 
 ## Installation
 
+- git clone https://github.com/Pixelatory/HybridFragmentTokenization
 - download finetuned weights and logs from https://brocku-my.sharepoint.com/:f:/g/personal/na16dg_brocku_ca/Ei6Dk849_FZInrAEXLiYxDUByV0QbG9eeVG0g1CYihDcNQ?e=RxYh4P
 - place folders inside HybridFragmentTokenization/
 - extract allmolgen_pretrain_data_100maxlen_FIXEDCOLS.tar.xz for pre-training data
@@ -19,5 +20,5 @@ OR
 
 ## Inference
 
-Finetuned weights were provided in the installation steps. To perform inference, view the example provided at the base of inference.py
+Finetuned weights are provided in the installation steps. To perform inference, view the example provided at the base of inference.py
 
