@@ -1,7 +1,5 @@
 # HybridFragmentTokenization
 
-GitHub repository for a submitted paper "ADMET Prediction from a Fragment Spectrum". Reference to be provided after it's published.
-
 ## Installation
 
 - git clone https://github.com/Pixelatory/HybridFragmentTokenization
@@ -21,4 +19,8 @@ OR
 ## Inference
 
 Finetuned weights are provided in the installation steps. To perform inference, view the example provided at the base of inference.py
+
+### Reference
+
+Aksamit, N., Tchagang, A., Li, Y. et al. Hybrid fragment-SMILES tokenization for ADMET prediction in drug discovery. BMC Bioinformatics 25, 255 (2024). https://doi.org/10.1186/s12859-024-05861-z
 
